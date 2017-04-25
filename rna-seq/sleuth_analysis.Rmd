@@ -1,0 +1,70 @@
+---
+title: "Sleuth_example"
+author: "Kent Riemondy RBI"
+date: "April 22, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Basic Differential Expression analysis with Sleuth
+
+First load up sleuth
+```{r}
+library(tidyverse)
+source("http://bioconductor.org/biocLite.R")
+biocLite("rhdf5")
+install.packages("devtools")
+devtools::install_github("pachterlab/sleuth")
+library("sleuth")
+```
+
+Next we will construct a dataframe that contains metadata describing the experiment.
+
+```{r meta_data}
+base_dir <- "~/src/MOLB7621/optional-class/rna-seq/"
+# get sample ids
+sample_id <- dir(file.path(base_dir, "kallisto"))
+# get full paths to kallisto directories
+paths <- dir(file.path(base_dir, "kallisto"), full.names = T)
+# specify the sample type
+conditions <- c(rep("scrambled", 3), rep("Msi2_kd", 3))
+# put it all in a dataframe
+meta_data <- data_frame(sample = sample_id, 
+               condition = conditions,
+               path = paths)
+meta_data
+```
+
+```{r read_in_data}
+# generate sleuth object, and supply formula for model
+so <- sleuth_prep(meta_data, ~condition )
+# sleuth objs are essentially lists that contain other R objects
+# to get a decription
+#?sleuth_prep
+# To access each object
+# so$full_model
+```
+
+```{r fit_models}
+so <- sleuth_fit(so)
+so <- sleuth_fit(so, ~1, 'reduced')
+```
+
+```{r perform_stats}
+so <- sleuth_lrt(so, 'reduced', 'full')
+```
+
+```{r report_results}
+res <- sleuth_results(so, "reduced:full", test_type = "lrt")
+res <- as_data_frame(res)
+res
+```
+
+```{r launch_interactive}
+sleuth_live(so)
+```
+
+```

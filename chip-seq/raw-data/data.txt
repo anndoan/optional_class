@@ -1,0 +1,2 @@
+fastqs were downloaded from encode for total PolII, S2-P PolII, and S5-PolII
+for mouse MEL cells.

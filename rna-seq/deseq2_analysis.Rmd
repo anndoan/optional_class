@@ -1,0 +1,65 @@
+---
+title: "DESeq2_example"
+author: "Kent Riemondy RBI"
+date: "April 22, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Basic Differential Expression analysis with DESeq2
+
+First load up DESeq2
+```{r}
+# install instructions
+#source("https://bioconductor.org/biocLite.R")
+#biocLite("DESeq2")
+library(DESeq2)
+library(tidyverse)
+```
+
+```{r deseq}
+counts_file <- "~/src/MOLB7621/optional-class/rna-seq/feature_counts/counts.txt"
+
+counts <- read_tsv(counts_file, comment = "#")
+
+# remove unneccessary columns to make a count matrix
+counts <- select(counts, -(Chr:Length))
+
+#convert to base R data.frame
+dat <- as.data.frame(counts)
+#set GeneId to rownames
+rownames(dat) <- dat$Geneid
+#drop Geneid
+dat[, 1] <- NULL
+
+# specify the sample type
+conditions <- c(rep("scrambled", 3), rep("Msi2_kd", 3))
+
+#specify the bam file ids
+bams <- colnames(dat)
+
+# put it all in a dataframe
+meta_data <- data_frame(bams = bams, 
+               condition = conditions)
+
+# generate deseq object from count data, metadata, and supplied formula
+dds <- DESeqDataSetFromMatrix(countData = dat,
+                              colData = meta_data,
+                              design = ~ condition)
+
+dds <- DESeq(dds)
+# by default will come the two groups specificed in condition column
+res <- results(dds)
+res
+```
+
+  The output from DESeq is in a non-dataframe object, so next we'll transform it into a dataframe. 
+```{r tidy_data}
+res_table <- as.data.frame(res) %>% 
+  mutate(genes = rownames(res)) %>% 
+  select(genes, everything()) %>% 
+  as_data_frame()  
+```
