@@ -15,7 +15,7 @@ fastqs="$dir/raw_data/"
 
 # first build the index for kallisto (takes a few minutes)
 
-#kallisto index -i $dir"/dbases/kallisto.idx" $fasta
+kallisto index -i $dir"/dbases/kallisto.idx" $fasta
 
 ########################################
 # psuedoalign and count reads overlapping transcripts

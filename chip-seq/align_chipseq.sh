@@ -31,14 +31,14 @@ idx="$workdir/dbases/bt2.out"
 fastqs="$workdir/raw-data"
 
 # build indicies for bowtie2 aligner
-#bowtie2-build -p 6 $fasta $idx 
+bowtie2-build -p 6 $fasta $idx 
 
 # check fastq qualities
-#for fastq in $fastqs"/*.fastq.gz"
-#do 
-#    echo "checking qualites for "$fastq
-#    fastqc -t 12  $fastq
-#done
+for fastq in $fastqs"/*.fastq.gz"
+do 
+    echo "checking qualites for "$fastq
+    fastqc -t 12  $fastq
+done
 
 # map data and generate bam file
 # -p indicates the number of CPUs to use

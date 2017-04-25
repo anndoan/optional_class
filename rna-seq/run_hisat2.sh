@@ -30,11 +30,11 @@ annotations="$dir/dbases/gencode.vM13.basic.annotation.gtf"
 
 ########################################
 #check fastq qualities
-#for fastq in "$fastqs"*.fastq.gz
-#do 
-#    echo "getting sequence quality info for "$fastq
-#    fastqc -t 12  $fastq
-#done
+for fastq in "$fastqs"*.fastq.gz
+do 
+    echo "getting sequence quality info for "$fastq
+    fastqc -t 12  $fastq
+done
 
 
 ########################################
@@ -42,26 +42,26 @@ annotations="$dir/dbases/gencode.vM13.basic.annotation.gtf"
 # make directory for output (-p will not throw an error if directory
 # already exists
 
-#mkdir -p hisat2
-#
-#for fastq in "$fastqs"*.fastq.gz
-#do 
-#    echo "aligning "$fastq "with hisat2"
-#    
-#    # strip directory information from $fastq variable
-#    outname=$(basename $fastq)
-#    # strip .fastq.gz from $outname variable
-#    outname=${outname/.fastq.gz/}
-#
-#    hisat2 -x $hisat2_idx \
-#        -U $fastq \
-#        -p 12 \
-#        | samtools view -bS - \
-#        | samtools sort - \
-#        > "hisat2/"$outname".bam" 
-#
-#    samtools index "hisat2/"$outname".bam"
-#done
+mkdir -p hisat2
+
+for fastq in "$fastqs"*.fastq.gz
+do 
+    echo "aligning "$fastq "with hisat2"
+    
+    # strip directory information from $fastq variable
+    outname=$(basename $fastq)
+    # strip .fastq.gz from $outname variable
+    outname=${outname/.fastq.gz/}
+
+    hisat2 -x $hisat2_idx \
+        -U $fastq \
+        -p 12 \
+        | samtools view -bS - \
+        | samtools sort - \
+        > "hisat2/"$outname".bam" 
+
+    samtools index "hisat2/"$outname".bam"
+done
 
 ########################################
 # count reads overlapping exons of each gene
